@@ -22,6 +22,7 @@ _CURRENCY_MARKERS: tuple[tuple[str, str], ...] = (
     ("€", "EUR"),
 )
 _NUMBER = re.compile(r"^-?\d+(\.\d+)?$")
+_GROUPED = re.compile(r"^-?\d{1,3}(,\d{3})+(\.\d+)?$")
 _YMD = re.compile(r"^(\d{4})\s*[/\-.年]\s*(\d{1,2})\s*[/\-.月]\s*(\d{1,2})\s*日?$")
 _YM = re.compile(r"^(\d{4})\s*[/\-.年]\s*(\d{1,2})\s*月?$")
 
@@ -47,7 +48,11 @@ def parse_cost(raw: object, header_text: str = "") -> tuple[Decimal | None, str 
     if cell_currency and currency and cell_currency != currency:
         return None, None, [f"currency conflict: header {currency}, cell {cell_currency}"]
     currency = cell_currency or currency
-    stripped = re.sub(r"(JPY|USD|EUR|[¥$€円,\s])", "", text, flags=re.IGNORECASE)
+    stripped = re.sub(r"(JPY|USD|EUR|[¥$€円\s])", "", text, flags=re.IGNORECASE)
+    if "," in stripped:
+        if not _GROUPED.match(stripped):
+            return None, currency, [f"ambiguous number separators: {text!r}"]
+        stripped = stripped.replace(",", "")
     if _NUMBER.match(stripped):
         try:
             return Decimal(stripped), currency, []
@@ -76,13 +81,14 @@ def parse_schedule(
             return None, None, [f"invalid calendar date: {text!r}"]
     if m := _YM.match(text):
         year, month = int(m[1]), int(m[2])
-        if 1 <= month <= 12:
+        if 1 <= month <= 12 and dt.MINYEAR <= year <= dt.MAXYEAR:
             last = calendar.monthrange(year, month)[1]
             return (
                 None,
                 (dt.date(year, month, 1), dt.date(year, month, last)),
                 ["month-only schedule kept as a range"],
             )
+        return None, None, [f"invalid year/month: {text!r}"]
     try:
         return dt.date.fromisoformat(text), None, []
     except ValueError:

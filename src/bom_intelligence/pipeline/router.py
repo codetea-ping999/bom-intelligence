@@ -60,7 +60,11 @@ def route(
     blockers = [d for d in diagnostics if d.severity is Severity.ERROR]
     if not blockers:
         deterministic = _DETERMINISTIC_BY_KIND.get(profile.kind)
-        if deterministic is not None and profile.layout_hint in ("regular_table", "table"):
+        if deterministic is not None and profile.layout_hint in (
+            "regular_table",
+            "multi_table",  # one table per sheet; competing tables raise MULTIPLE_TABLES
+            "table",
+        ):
             return StrategyDecision(
                 strategy=deterministic,
                 reasons=reasons,

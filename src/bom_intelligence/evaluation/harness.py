@@ -148,12 +148,18 @@ def evaluate(results: list[DocumentResult], gold: list[GoldDocument]) -> dict[st
             layout_ok += result.layout_hint == doc.layout_hint
         expected_records += len(doc.records)
         predicted_records += len(predicted)
-        pred_by_pn: dict[str, GoldRecord] = {}
+        pred_by_pn: dict[str, list[GoldRecord]] = {}
         for item in predicted:
-            pred_by_pn.setdefault(item.part_number, item)
+            pred_by_pn.setdefault(item.part_number, []).append(item)
         doc_records_exact = len(predicted) == len(doc.records)
         for g in doc.records:
-            p: GoldRecord | None = pred_by_pn.pop(g.part_number, None)
+            candidates = pred_by_pn.get(g.part_number, [])
+            # Prefer an exact match among same-part-number predictions, else the first.
+            p: GoldRecord | None = next((c for c in candidates if c == g), None) or (
+                candidates[0] if candidates else None
+            )
+            if p is not None:
+                candidates.remove(p)
             if p is None:
                 doc_records_exact = False
                 continue

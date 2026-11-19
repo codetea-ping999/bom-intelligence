@@ -181,8 +181,12 @@ def extract_excel(
                     if formula_cell.data_type == "f" and raw is None:
                         missing_cached.append(coord)
                         row_warnings.append(f"{coord}: formula without cached value")
-                        raw = str(formula_cell.value)  # keep the formula as original text
+                        if col.category in ("cost", "schedule"):
+                            # Keep the expression as original text; the value stays unparsed.
+                            raw = str(formula_cell.value)
                     text = None if raw is None else str(raw).strip() or None
+                    if text is None and formula_cell.data_type == "f":
+                        text = str(formula_cell.value)
                     cells[col.key] = GridCell(raw=raw, source=src(coord, text))
                     if col.key in hidden_cols and text is not None:
                         row_warnings.append(f"{coord}: value from hidden column")

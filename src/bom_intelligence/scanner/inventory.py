@@ -58,9 +58,11 @@ def _hash_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _iter_files(root: Path, errors: list[OSError]) -> Iterable[Path]:
+def _iter_files(root: Path, errors: list[OSError], exclude: Path | None = None) -> Iterable[Path]:
     # Do not follow directory symlinks: avoids cycles and escaping the scan root.
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False, onerror=errors.append):
+        if exclude is not None:
+            dirnames[:] = [d for d in dirnames if (Path(dirpath) / d).resolve() != exclude]
         dirnames.sort()
         for name in sorted(filenames):
             yield Path(dirpath) / name
@@ -100,13 +102,17 @@ def _scan_one(root: Path, path: Path) -> InventoryEntry:
     )
 
 
-def scan_directory(root: Path) -> list[InventoryEntry]:
-    """Recursively inventory ``root``. Results are sorted by relative path."""
+def scan_directory(root: Path, exclude: Path | None = None) -> list[InventoryEntry]:
+    """Recursively inventory ``root``. Results are sorted by relative path.
+
+    ``exclude`` skips one directory subtree (e.g. an output directory inside ``root``).
+    """
     root = root.resolve()
+    exclude = None if exclude is None else exclude.resolve()
     if not root.is_dir():
         raise NotADirectoryError(str(root))
     walk_errors: list[OSError] = []
-    entries = [_scan_one(root, path) for path in _iter_files(root, walk_errors)]
+    entries = [_scan_one(root, path) for path in _iter_files(root, walk_errors, exclude)]
     for err in walk_errors:
         target = Path(err.filename) if err.filename else root
         try:

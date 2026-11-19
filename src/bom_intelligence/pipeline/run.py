@@ -163,7 +163,7 @@ def analyze_directory(
 ) -> list[DocumentResult]:
     root = root.resolve()
     registry = registry or default_registry()
-    entries = scan_directory(root)
+    entries = scan_directory(root, exclude=output_dir)
     results = [process_document(root, entry, registry) for entry in entries]
     output_dir.mkdir(parents=True, exist_ok=True)
     write_inventory_jsonl(entries, output_dir / INVENTORY_FILE)
