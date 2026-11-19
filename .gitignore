@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Office temp / lock files
+~$*
+*.tmp
+.~lock.*#
+
+# Local documents: never commit real BOM data
+samples/*
+!samples/README.md
+local/
+data/
+
+# Generated reports
+reports/*
+!reports/.gitkeep
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+credentials*.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
