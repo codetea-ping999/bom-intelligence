@@ -5,7 +5,9 @@ description = "Explainable BOM document intelligence for heterogeneous Excel, Po
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "openpyxl>=3.1",
     "pydantic>=2.7",
+    "python-pptx>=1.0",
 ]
 
 [project.scripts]
@@ -16,6 +18,7 @@ dev = [
     "mypy>=1.10",
     "pytest>=8.0",
     "ruff>=0.5",
+    "types-openpyxl>=3.1.5.20261017",
 ]
 
 [build-system]
@@ -42,3 +45,7 @@ mypy_path = "src"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.ruff.lint.per-file-ignores]
+# Full-width punctuation is intentional in Japanese header/keyword handling.
+"*" = ["RUF001", "RUF002", "RUF003"]
