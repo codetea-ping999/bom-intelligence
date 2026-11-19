@@ -58,9 +58,9 @@ def _hash_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _iter_files(root: Path) -> Iterable[Path]:
+def _iter_files(root: Path, errors: list[OSError]) -> Iterable[Path]:
     # Do not follow directory symlinks: avoids cycles and escaping the scan root.
-    for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=False, onerror=errors.append):
         dirnames.sort()
         for name in sorted(filenames):
             yield Path(dirpath) / name
@@ -105,7 +105,30 @@ def scan_directory(root: Path) -> list[InventoryEntry]:
     root = root.resolve()
     if not root.is_dir():
         raise NotADirectoryError(str(root))
-    entries = [_scan_one(root, path) for path in _iter_files(root)]
+    walk_errors: list[OSError] = []
+    entries = [_scan_one(root, path) for path in _iter_files(root, walk_errors)]
+    for err in walk_errors:
+        target = Path(err.filename) if err.filename else root
+        try:
+            rel = target.relative_to(root).as_posix() or "."
+        except ValueError:
+            rel = str(target)
+        entries.append(
+            InventoryEntry(
+                path=rel if rel.endswith("/") else rel + "/",
+                filename=target.name,
+                extension="",
+                document_type=DocumentType.OTHER,
+                size_bytes=None,
+                modified_time=None,
+                sha256=None,
+                supported=False,
+                error=ScanError(
+                    code="DIRECTORY_UNREADABLE",
+                    message=f"directory could not be listed; its files are missing: {err}",
+                ),
+            )
+        )
     entries.sort(key=lambda e: e.path)
 
     by_hash: dict[str, list[int]] = defaultdict(list)

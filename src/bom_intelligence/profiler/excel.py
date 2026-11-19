@@ -24,6 +24,7 @@ from bom_intelligence.profiler.common import (
     _Model,
     clip,
     detect_container_problem,
+    range_bounds,
     ranges_intersect,
     zip_members,
 )
@@ -63,6 +64,8 @@ class TableRegion(_Model):
     range: str
     header_row: int
     data_rows: int
+    formula_cells: int = 0
+    formula_samples: tuple[str, ...] = ()
 
 
 class SheetProfile(_Model):
@@ -141,11 +144,11 @@ def _header_candidates(
     vocab: Vocabulary,
 ) -> list[HeaderCandidate]:
     candidates: list[HeaderCandidate] = []
-    rows = sorted({r for r, _ in values})
-    for row in rows:
-        cols = sorted(c for r, c in values if r == row)
-        if not cols:
-            continue
+    by_row: dict[int, list[int]] = {}
+    for r, c in values:
+        by_row.setdefault(r, []).append(c)
+    for row in sorted(by_row):
+        cols = sorted(by_row[row])
         # Segment the row into contiguous runs; merged-cell continuations count as filled.
         runs: list[list[int]] = []
         current: list[int] = []
@@ -206,10 +209,23 @@ def _table_region(
     )
 
 
+def _with_formulas(region: TableRegion, formula_coords: list[tuple[int, int, str]]) -> TableRegion:
+    min_col, min_row, max_col, max_row = range_bounds(region.range)
+    inside = [
+        coord
+        for r, c, coord in formula_coords
+        if min_row <= r <= max_row and min_col <= c <= max_col
+    ]
+    return region.model_copy(
+        update={"formula_cells": len(inside), "formula_samples": tuple(inside[:20])}
+    )
+
+
 def _profile_sheet(ws: Worksheet, index: int, vocab: Vocabulary) -> SheetProfile:
     values: dict[tuple[int, int], str] = {}
     formula_cells = 0
     formula_samples: list[str] = []
+    formula_coords: list[tuple[int, int, str]] = []
     hyperlinks = 0
     hits: list[KeywordHit] = []
     hit_count = 0
@@ -221,6 +237,7 @@ def _profile_sheet(ws: Worksheet, index: int, vocab: Vocabulary) -> SheetProfile
                 hyperlinks += 1
             if cell.data_type == "f":
                 formula_cells += 1
+                formula_coords.append((cell.row, cell.column, cell.coordinate))
                 if len(formula_samples) < MAX_FORMULA_SAMPLES:
                     formula_samples.append(cell.coordinate)
             text = _text(cell.value)
@@ -243,7 +260,9 @@ def _profile_sheet(ws: Worksheet, index: int, vocab: Vocabulary) -> SheetProfile
                         )
     covered = _merged_cover(ws)
     headers = _header_candidates(ws, values, covered, vocab)
-    regions = [_table_region(h, values, ws.max_row) for h in headers]
+    regions = [
+        _with_formulas(_table_region(h, values, ws.max_row), formula_coords) for h in headers
+    ]
 
     hidden_rows = sorted(r for r, dim in ws.row_dimensions.items() if dim.hidden)
     hidden_cols: list[str] = []

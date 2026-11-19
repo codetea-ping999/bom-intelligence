@@ -270,7 +270,13 @@ def _profile_slide(slide: object, number: int, slide_area: int, vocab: Vocabular
             continue
         label = next(o for o in text_shapes if o.shape_id == hit.shape_id)
         assert label.text is not None
-        inline = _INLINE_SEPARATOR.search(label.text)
+        inline = None
+        for line in label.text.splitlines():
+            head = _INLINE_SEPARATOR.split(line, maxsplit=1)[0]
+            if any(m.category.value == hit.category for m in vocab.find_keywords(head)):
+                inline = _INLINE_SEPARATOR.search(line)
+                if inline:
+                    break
         if inline:
             pairs.append(
                 LabelValuePair(
@@ -284,6 +290,8 @@ def _profile_slide(slide: object, number: int, slide_area: int, vocab: Vocabular
                 )
             )
             continue
+        if "\n" in label.text and _INLINE_SEPARATOR.search(label.text):
+            continue  # multi-line box with inline values for other labels only
         if len(label.text) > MAX_LABEL_LENGTH:
             continue
         near = _right_or_below(label, text_shapes)

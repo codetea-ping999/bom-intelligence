@@ -140,14 +140,14 @@ def _excel_header(
             SuggestedStrategy.SEMANTIC,
             [_cell(sheet.name, m) for m in merged],
         )
-    formulas = [f for f in sheet.formula_samples if ranges_intersect(f, region.range)]
-    if formulas:
+    if region.formula_cells:
         diag(
             FailureCode.FORMULA_DEPENDENCY,
             Severity.WARNING,
-            f"{len(formulas)} formula cell(s) inside the table; values rely on cached results.",
+            f"{region.formula_cells} formula cell(s) inside the table; "
+            "values rely on cached results.",
             SuggestedStrategy.RULE,
-            [_cell(sheet.name, f) for f in formulas[:10]],
+            [_cell(sheet.name, f) for f in region.formula_samples[:10]],
         )
     rmin_col, rmin_row, rmax_col, rmax_row = range_bounds(region.range)
     hidden_cols = [
@@ -309,7 +309,6 @@ def diagnose_powerpoint(profile: PowerPointProfile) -> list[Diagnostic]:
         return [_read_error(profile.file, profile.document_type, profile.read_error)]
     out: list[Diagnostic] = []
     base = {"file": profile.file, "document_type": profile.document_type}
-    any_table_header = False
     freeform_hits: list[KeywordHit] = []
     for slide in profile.slides:
         oles = [s for s in slide.shapes if s.kind == "ole"]
@@ -336,9 +335,29 @@ def diagnose_powerpoint(profile: PowerPointProfile) -> list[Diagnostic]:
                 )
             )
         for header in slide.table_headers:
-            any_table_header = True
             out.extend(_ppt_table(profile, header))
-        freeform_hits.extend(h for h in slide.keyword_hits if h.cell is None)
+        if not slide.table_headers:
+            freeform_hits.extend(h for h in slide.keyword_hits if h.cell is None)
+        header_shapes = {h.shape_id for h in slide.table_headers}
+        orphan = [
+            h for h in slide.keyword_hits if h.cell is not None and h.shape_id not in header_shapes
+        ]
+        if orphan:
+            out.append(
+                Diagnostic(
+                    **base,
+                    code=FailureCode.HEADER_NOT_FOUND,
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Slide {slide.number} has a table with BOM keywords but no "
+                        "recognizable header row."
+                    ),
+                    suggested_strategy=SuggestedStrategy.SEMANTIC,
+                    evidence=tuple(
+                        _shape(slide.number, h.shape_id or 0, h.text) for h in orphan[:20]
+                    ),
+                )
+            )
         for pair in slide.label_value_pairs:
             if pair.value_text is None:
                 out.append(
@@ -351,7 +370,7 @@ def diagnose_powerpoint(profile: PowerPointProfile) -> list[Diagnostic]:
                         evidence=(_shape(slide.number, pair.label_shape_id, pair.label_text),),
                     )
                 )
-    if freeform_hits and not any_table_header:
+    if freeform_hits:
         pairs = [p for s in profile.slides for p in s.label_value_pairs]
         grouped = {
             shape.shape_id
