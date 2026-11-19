@@ -20,9 +20,10 @@ from pptx.shapes.group import GroupShape
 from pptx.shapes.picture import Picture
 
 from bom_intelligence.models.diagnostics import FailureCode
-from bom_intelligence.models.document import DocumentType, document_type_for_suffix
+from bom_intelligence.models.document import document_type_for_suffix
 from bom_intelligence.profiler.common import (
     KeywordHit,
+    ProfileBase,
     ReadError,
     _Model,
     clip,
@@ -94,16 +95,25 @@ class SlideProfile(_Model):
     layout_hint: PptLayoutHint
 
 
-class PowerPointProfile(_Model):
+class PowerPointProfile(ProfileBase):
     kind: Literal["powerpoint"] = "powerpoint"
-    file: str
-    document_type: DocumentType
-    read_error: ReadError | None = None
     slide_count: int = 0
     slide_width: int | None = None
     slide_height: int | None = None
     slides: tuple[SlideProfile, ...] = ()
     layout_hint: PptLayoutHint = "no_bom_content"
+
+    def stats(self) -> dict[str, int | float]:
+        kinds: dict[str, int] = {}
+        for slide in self.slides:
+            for kind, count in slide.shape_kinds.items():
+                kinds[kind] = kinds.get(kind, 0) + count
+        return {
+            "slides": self.slide_count,
+            "table_headers": sum(len(s.table_headers) for s in self.slides),
+            "keyword_hits": sum(len(s.keyword_hits) for s in self.slides),
+            **{f"shapes_{k}": v for k, v in sorted(kinds.items())},
+        }
 
 
 def _kind(shape: BaseShape) -> ShapeKind:

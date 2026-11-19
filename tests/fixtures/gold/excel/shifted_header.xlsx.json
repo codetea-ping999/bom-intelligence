@@ -1,0 +1,58 @@
+{
+  "path": "excel/shifted_header.xlsx",
+  "expected_strategy": "deterministic_excel",
+  "expected_codes": [
+    "SHIFTED_LAYOUT"
+  ],
+  "layout_hint": "regular_table",
+  "records": [
+    {
+      "part_number": "SYN-1001",
+      "part_name": "Bracket, front",
+      "supplier": null,
+      "cost_value": "1250.5",
+      "currency": null,
+      "cost_type": "unknown",
+      "schedule_date": "2027-04-01",
+      "schedule_range": null,
+      "milestone_type": "sop",
+      "provenance": {
+        "part_number": "BOM!C6",
+        "cost": "BOM!E6",
+        "schedule": "BOM!F6"
+      }
+    },
+    {
+      "part_number": "SYN-1002",
+      "part_name": "Bolt M6",
+      "supplier": null,
+      "cost_value": "12",
+      "currency": null,
+      "cost_type": "unknown",
+      "schedule_date": "2027-04-01",
+      "schedule_range": null,
+      "milestone_type": "sop",
+      "provenance": {
+        "part_number": "BOM!C7",
+        "cost": "BOM!E7",
+        "schedule": "BOM!F7"
+      }
+    },
+    {
+      "part_number": "SYN-1003",
+      "part_name": "Cover, rear",
+      "supplier": null,
+      "cost_value": "880",
+      "currency": null,
+      "cost_type": "unknown",
+      "schedule_date": "2027-05-15",
+      "schedule_range": null,
+      "milestone_type": "sop",
+      "provenance": {
+        "part_number": "BOM!C8",
+        "cost": "BOM!E8",
+        "schedule": "BOM!F8"
+      }
+    }
+  ]
+}

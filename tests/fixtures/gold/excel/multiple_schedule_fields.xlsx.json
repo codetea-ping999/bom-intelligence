@@ -1,0 +1,9 @@
+{
+  "path": "excel/multiple_schedule_fields.xlsx",
+  "expected_strategy": "semantic_text",
+  "expected_codes": [
+    "MULTIPLE_SCHEDULE_FIELDS"
+  ],
+  "layout_hint": "regular_table",
+  "records": []
+}

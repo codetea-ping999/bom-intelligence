@@ -74,6 +74,50 @@ def _cmd_fixtures(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_analyze(args: argparse.Namespace) -> int:
+    from bom_intelligence.pipeline import analyze_directory, default_registry
+    from bom_intelligence.vocabulary import Vocabulary
+
+    vocab = Vocabulary.load(Path(args.aliases)) if args.aliases else None
+    results = analyze_directory(Path(args.root), Path(args.output_dir), default_registry(vocab))
+    strategies = Counter(r.decision.strategy.value for r in results)
+    records = sum(len(r.records) for r in results)
+    print(
+        f"analyzed {len(results)} documents; {records} records; "
+        + ", ".join(f"{k}={v}" for k, v in sorted(strategies.items()))
+        + f" -> {args.output_dir}"
+    )
+    return 0
+
+
+def _cmd_evaluate(args: argparse.Namespace) -> int:
+    from bom_intelligence.evaluation import evaluate, load_gold
+    from bom_intelligence.pipeline import read_results
+
+    metrics = evaluate(read_results(Path(args.results_dir)), load_gold(Path(args.gold)))
+    text = json.dumps(metrics, ensure_ascii=False, indent=2)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(text + "\n", encoding="utf-8")
+    summary = {k: v for k, v in metrics.items() if k != "details"}
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _cmd_report(args: argparse.Namespace) -> int:
+    from bom_intelligence.pipeline import read_results
+    from bom_intelligence.reporting import write_report
+
+    results_dir = Path(args.results_dir)
+    metrics = None
+    if args.metrics:
+        metrics = json.loads(Path(args.metrics).read_text(encoding="utf-8"))
+    output = Path(args.output) if args.output else results_dir / "report"
+    summary = write_report(read_results(results_dir), output, metrics)
+    print(f"{summary['headline']} -> {output / 'report.md'}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="bom",
@@ -97,6 +141,25 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures = sub.add_parser("fixtures", help="generate synthetic fixture documents")
     fixtures.add_argument("output", help="directory to write fixtures into")
     fixtures.set_defaults(func=_cmd_fixtures)
+    analyze = sub.add_parser(
+        "analyze", help="scan, profile, diagnose, route and extract a directory"
+    )
+    analyze.add_argument("root")
+    analyze.add_argument("--output-dir", "-o", default="reports/run", help="results directory")
+    analyze.add_argument("--aliases", help="custom alias JSON")
+    analyze.set_defaults(func=_cmd_analyze)
+
+    evaluate = sub.add_parser("evaluate", help="compare analyze results with a gold set")
+    evaluate.add_argument("results_dir")
+    evaluate.add_argument("--gold", default="tests/fixtures/gold", help="gold JSON directory")
+    evaluate.add_argument("--output", "-o", help="write full metrics JSON here")
+    evaluate.set_defaults(func=_cmd_evaluate)
+
+    report = sub.add_parser("report", help="failure/complexity report from analyze results")
+    report.add_argument("results_dir")
+    report.add_argument("--metrics", help="metrics JSON from 'bom evaluate'")
+    report.add_argument("--output", "-o", help="report directory (default: <results>/report)")
+    report.set_defaults(func=_cmd_report)
     return parser
 
 

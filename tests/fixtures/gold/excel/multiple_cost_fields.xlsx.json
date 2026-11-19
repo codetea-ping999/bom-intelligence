@@ -1,0 +1,9 @@
+{
+  "path": "excel/multiple_cost_fields.xlsx",
+  "expected_strategy": "semantic_text",
+  "expected_codes": [
+    "MULTIPLE_COST_FIELDS"
+  ],
+  "layout_hint": "regular_table",
+  "records": []
+}

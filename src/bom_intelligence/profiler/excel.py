@@ -16,9 +16,10 @@ from openpyxl.utils import get_column_letter, range_boundaries
 from openpyxl.worksheet.worksheet import Worksheet
 
 from bom_intelligence.models.diagnostics import FailureCode
-from bom_intelligence.models.document import DocumentType, document_type_for_suffix
+from bom_intelligence.models.document import document_type_for_suffix
 from bom_intelligence.profiler.common import (
     KeywordHit,
+    ProfileBase,
     ReadError,
     _Model,
     clip,
@@ -92,11 +93,8 @@ class SheetProfile(_Model):
         return self.state != "visible"
 
 
-class ExcelProfile(_Model):
+class ExcelProfile(ProfileBase):
     kind: Literal["excel"] = "excel"
-    file: str
-    document_type: DocumentType
-    read_error: ReadError | None = None
     sheet_count: int = 0
     has_vba: bool = False
     defined_names: tuple[str, ...] = ()
@@ -106,6 +104,17 @@ class ExcelProfile(_Model):
 
     def visible_sheets(self) -> list[SheetProfile]:
         return [s for s in self.sheets if not s.hidden]
+
+    def stats(self) -> dict[str, int | float]:
+        return {
+            "sheets": self.sheet_count,
+            "hidden_sheets": sum(1 for s in self.sheets if s.hidden),
+            "header_candidates": sum(len(s.header_candidates) for s in self.sheets),
+            "merged_ranges": sum(len(s.merged_ranges) for s in self.sheets),
+            "formula_cells": sum(s.formula_cells for s in self.sheets),
+            "images": sum(s.images for s in self.sheets),
+            "keyword_hits": sum(s.keyword_hit_count for s in self.sheets),
+        }
 
 
 def _text(value: object) -> str | None:

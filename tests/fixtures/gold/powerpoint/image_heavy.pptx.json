@@ -1,0 +1,9 @@
+{
+  "path": "powerpoint/image_heavy.pptx",
+  "expected_strategy": "ocr",
+  "expected_codes": [
+    "IMAGE_ONLY"
+  ],
+  "layout_hint": "image",
+  "records": []
+}

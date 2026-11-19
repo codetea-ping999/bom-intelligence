@@ -1,0 +1,10 @@
+{
+  "path": "powerpoint/embedded_object.pptx",
+  "expected_strategy": "human_review",
+  "expected_codes": [
+    "EMBEDDED_OBJECT",
+    "UNKNOWN"
+  ],
+  "layout_hint": "no_bom_content",
+  "records": []
+}

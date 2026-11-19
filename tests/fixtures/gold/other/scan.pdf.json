@@ -1,0 +1,9 @@
+{
+  "path": "other/scan.pdf",
+  "expected_strategy": "ocr",
+  "expected_codes": [
+    "UNSUPPORTED_FORMAT"
+  ],
+  "layout_hint": null,
+  "records": []
+}

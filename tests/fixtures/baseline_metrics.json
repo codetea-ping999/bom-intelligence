@@ -1,0 +1,25 @@
+{
+  "documents": 19,
+  "document_success_rate": 1.0,
+  "strategy_accuracy": 1.0,
+  "failure_class_accuracy": 1.0,
+  "layout_hint_accuracy": 1.0,
+  "records_expected": 18,
+  "records_predicted": 18,
+  "records_matched": 18,
+  "record_precision": 1.0,
+  "record_recall": 1.0,
+  "false_positive_rate": 0.0,
+  "field_exact_match": 1.0,
+  "field_exact_match_by_field": {
+    "part_name": 1.0,
+    "supplier": 1.0,
+    "cost_value": 1.0,
+    "currency": 1.0,
+    "cost_type": 1.0,
+    "schedule_date": 1.0,
+    "schedule_range": 1.0,
+    "milestone_type": 1.0
+  },
+  "provenance_accuracy": 1.0
+}

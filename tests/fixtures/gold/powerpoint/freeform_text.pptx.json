@@ -1,0 +1,9 @@
+{
+  "path": "powerpoint/freeform_text.pptx",
+  "expected_strategy": "spatial_semantic",
+  "expected_codes": [
+    "FREEFORM_LAYOUT"
+  ],
+  "layout_hint": "layout",
+  "records": []
+}
