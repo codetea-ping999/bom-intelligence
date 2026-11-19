@@ -1,0 +1,34 @@
+{
+  "_comment": "Header/keyword aliases per BOM field. Each entry is [alias, subtype-or-null]. Matching is done after NFKC normalization, lower-casing, and removal of whitespace, punctuation, and parenthesized suffixes.",
+  "part_number": [
+    ["部品番号", null], ["品番", null], ["部番", null], ["図番", null], ["部品no", null],
+    ["part no", null], ["part number", null], ["part#", null], ["p/n", null], ["pn", null],
+    ["item number", null], ["item no", null]
+  ],
+  "part_name": [
+    ["部品名", null], ["品名", null], ["名称", null], ["部品名称", null],
+    ["part name", null], ["description", null], ["item name", null]
+  ],
+  "supplier": [
+    ["仕入先", null], ["サプライヤ", null], ["サプライヤー", null], ["取引先", null], ["メーカー", null],
+    ["supplier", null], ["vendor", null], ["maker", null]
+  ],
+  "cost": [
+    ["コスト", "unknown"], ["価格", "unknown"], ["単価", "unknown"], ["金額", "unknown"], ["原価", "unknown"],
+    ["試作単価", "prototype"], ["試作費", "prototype"], ["試作コスト", "prototype"],
+    ["量産単価", "production"], ["量産コスト", "production"], ["量産価格", "production"],
+    ["見積", "estimate"], ["見積単価", "estimate"], ["見積金額", "estimate"], ["概算", "estimate"],
+    ["cost", "unknown"], ["price", "unknown"], ["unit price", "unknown"], ["unit cost", "unknown"],
+    ["prototype cost", "prototype"], ["production cost", "production"], ["mass production cost", "production"],
+    ["estimate", "estimate"], ["estimated cost", "estimate"], ["quote", "estimate"]
+  ],
+  "schedule": [
+    ["日程", "unknown"], ["日付", "unknown"], ["予定日", "unknown"], ["スケジュール", "unknown"],
+    ["納期", "delivery"], ["納入日", "delivery"], ["納入予定", "delivery"],
+    ["sop", "sop"], ["量産開始", "sop"], ["号口", "sop"],
+    ["試作日程", "prototype"], ["試作日", "prototype"],
+    ["出図", "drawing"], ["出図日", "drawing"], ["図面", "drawing"],
+    ["schedule", "unknown"], ["date", "unknown"], ["due date", "delivery"], ["delivery", "delivery"],
+    ["delivery date", "delivery"], ["prototype date", "prototype"], ["drawing release", "drawing"]
+  ]
+}
