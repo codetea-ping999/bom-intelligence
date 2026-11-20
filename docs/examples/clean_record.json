@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "part": {
+    "part_number": "SYN-1001",
+    "part_name": "Bracket, front",
+    "supplier": "Example Supplier A",
+    "category": null,
+    "source": {
+      "filename": "clean_table.xlsx",
+      "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+      "document_type": "xlsx",
+      "sheet": "BOM",
+      "slide": null,
+      "page": null,
+      "cell_range": "A2",
+      "shape_id": null,
+      "original_text": "SYN-1001"
+    }
+  },
+  "costs": [
+    {
+      "value": "1250.50",
+      "original_text": "¥1,250.50",
+      "currency": "JPY",
+      "cost_type": "production",
+      "unit_basis": "per piece",
+      "source": {
+        "filename": "clean_table.xlsx",
+        "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+        "document_type": "xlsx",
+        "sheet": "BOM",
+        "slide": null,
+        "page": null,
+        "cell_range": "C2",
+        "shape_id": null,
+        "original_text": "¥1,250.50"
+      }
+    }
+  ],
+  "schedules": [
+    {
+      "date": "2027-04-01",
+      "range_start": null,
+      "range_end": null,
+      "original_text": "2027/04/01",
+      "milestone_type": "sop",
+      "source": {
+        "filename": "clean_table.xlsx",
+        "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+        "document_type": "xlsx",
+        "sheet": "BOM",
+        "slide": null,
+        "page": null,
+        "cell_range": "D2",
+        "shape_id": null,
+        "original_text": "2027/04/01"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "deterministic",
+    "confidence": 0.95,
+    "parser_version": "excel-table/0.1.0",
+    "warnings": [],
+    "evidence": [
+      {
+        "field": "part_number",
+        "source": {
+          "filename": "clean_table.xlsx",
+          "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+          "document_type": "xlsx",
+          "sheet": "BOM",
+          "slide": null,
+          "page": null,
+          "cell_range": "A1",
+          "shape_id": null,
+          "original_text": "Part No"
+        },
+        "note": "header alias match"
+      }
+    ]
+  }
+}

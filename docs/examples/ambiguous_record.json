@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "part": {
+    "part_number": "SYN-2002",
+    "part_name": null,
+    "supplier": null,
+    "category": null,
+    "source": {
+      "filename": "freeform_slide.pptx",
+      "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+      "document_type": "pptx",
+      "sheet": null,
+      "slide": 3,
+      "page": null,
+      "cell_range": null,
+      "shape_id": 7,
+      "original_text": "品番: SYN-2002"
+    }
+  },
+  "costs": [
+    {
+      "value": null,
+      "original_text": "約1,200〜1,500円 (試作)",
+      "currency": "JPY",
+      "cost_type": "prototype",
+      "unit_basis": null,
+      "source": {
+        "filename": "freeform_slide.pptx",
+        "file_sha256": "b3cc0475bb78a5026098858e9889acf666d31062d513d303314eca31d36e72f2",
+        "document_type": "pptx",
+        "sheet": null,
+        "slide": 3,
+        "page": null,
+        "cell_range": null,
+        "shape_id": 9,
+        "original_text": "約1,200〜1,500円 (試作)"
+      }
+    }
+  ],
+  "schedules": [
+    {
+      "date": null,
+      "range_start": null,
+      "range_end": null,
+      "original_text": "来春予定",
+      "milestone_type": "unknown",
+      "source": null
+    }
+  ],
+  "metadata": {
+    "method": "semantic",
+    "confidence": 0.4,
+    "parser_version": "spatial-semantic/0.0.0",
+    "warnings": [
+      "cost is a range; value left unnormalized",
+      "schedule text has no resolvable date"
+    ],
+    "evidence": []
+  }
+}
