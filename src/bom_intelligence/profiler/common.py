@@ -8,6 +8,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 from bom_intelligence.models.diagnostics import FailureCode
+from bom_intelligence.models.document import DocumentType
 
 OLE_MAGIC = bytes.fromhex("D0CF11E0A1B11AE1")
 
@@ -21,6 +22,20 @@ class ReadError(_Model):
 
     code: FailureCode
     message: str
+
+
+class ProfileBase(_Model):
+    """Fields every document profile shares, whatever its format."""
+
+    kind: str
+    file: str
+    document_type: DocumentType
+    read_error: ReadError | None = None
+    layout_hint: str = "no_bom_content"
+
+    def stats(self) -> dict[str, int | float]:
+        """Small numeric summary kept in pipeline results."""
+        return {}
 
 
 class KeywordHit(_Model):

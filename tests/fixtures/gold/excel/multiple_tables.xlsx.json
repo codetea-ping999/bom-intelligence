@@ -1,0 +1,10 @@
+{
+  "path": "excel/multiple_tables.xlsx",
+  "expected_strategy": "semantic_text",
+  "expected_codes": [
+    "MULTIPLE_TABLES",
+    "SHIFTED_LAYOUT"
+  ],
+  "layout_hint": "multi_table",
+  "records": []
+}

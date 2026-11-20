@@ -31,6 +31,7 @@ Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 CurrencyCode = Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}$")]
 Confidence = Annotated[float, Field(ge=0.0, le=1.0)]
 
+_TABLE_CELL = re.compile(r"^R[1-9][0-9]*C[1-9][0-9]*$")
 _CELL_RANGE = re.compile(r"^\$?[A-Z]{1,3}\$?[1-9][0-9]*(:\$?[A-Z]{1,3}\$?[1-9][0-9]*)?$")
 
 
@@ -71,6 +72,9 @@ class SourceReference(_Model):
     page: Annotated[int, Field(ge=1)] | None = None
     cell_range: str | None = Field(default=None, description="A1-style cell or range")
     shape_id: int | None = None
+    table_cell: str | None = Field(
+        default=None, description="R<row>C<col> cell inside a slide/page table (1-based)"
+    )
     original_text: str | None = None
 
     @model_validator(mode="after")
@@ -81,6 +85,11 @@ class SourceReference(_Model):
             raise ValueError("cell_range requires sheet")
         if self.shape_id is not None and self.slide is None and self.page is None:
             raise ValueError("shape_id requires slide or page")
+        if self.table_cell is not None:
+            if not _TABLE_CELL.match(self.table_cell):
+                raise ValueError(f"invalid table cell: {self.table_cell!r}")
+            if self.shape_id is None:
+                raise ValueError("table_cell requires shape_id")
         return self
 
 

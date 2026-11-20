@@ -1,0 +1,9 @@
+{
+  "path": "excel/no_header.xlsx",
+  "expected_strategy": "semantic_text",
+  "expected_codes": [
+    "HEADER_NOT_FOUND"
+  ],
+  "layout_hint": "layout",
+  "records": []
+}

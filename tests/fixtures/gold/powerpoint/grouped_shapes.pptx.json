@@ -1,0 +1,9 @@
+{
+  "path": "powerpoint/grouped_shapes.pptx",
+  "expected_strategy": "spatial_semantic",
+  "expected_codes": [
+    "FREEFORM_LAYOUT"
+  ],
+  "layout_hint": "layout",
+  "records": []
+}

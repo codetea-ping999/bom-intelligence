@@ -1,0 +1,9 @@
+{
+  "path": "excel/legacy.xls",
+  "expected_strategy": "unsupported",
+  "expected_codes": [
+    "UNSUPPORTED_FORMAT"
+  ],
+  "layout_hint": null,
+  "records": []
+}

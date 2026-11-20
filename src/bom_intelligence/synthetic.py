@@ -72,7 +72,7 @@ def excel_shifted_header(path: Path) -> None:
 def excel_alias_variation(path: Path) -> None:
     wb, ws = _new_book()
     rows = [
-        [pn, name, f"¥{cost:,.0f}", date.strftime("%Y/%m/%d")]
+        [pn, name, f"¥{cost:,.2f}", date.strftime("%Y/%m/%d")]
         for pn, name, cost, date in CLEAN_ROWS
     ]
     _write_table(ws, 1, 1, ["品番", "品名", "量産単価(円)", "納期"], rows)

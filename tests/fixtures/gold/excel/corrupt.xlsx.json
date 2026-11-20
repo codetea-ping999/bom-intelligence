@@ -1,0 +1,9 @@
+{
+  "path": "excel/corrupt.xlsx",
+  "expected_strategy": "unsupported",
+  "expected_codes": [
+    "UNREADABLE_FILE"
+  ],
+  "layout_hint": "no_bom_content",
+  "records": []
+}

@@ -1,0 +1,9 @@
+{
+  "path": "excel/merged_header.xlsx",
+  "expected_strategy": "semantic_text",
+  "expected_codes": [
+    "MERGED_LAYOUT"
+  ],
+  "layout_hint": "layout",
+  "records": []
+}
