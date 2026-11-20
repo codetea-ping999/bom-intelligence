@@ -19,8 +19,8 @@ htmlcov/
 # Local documents: never commit real BOM data
 samples/*
 !samples/README.md
-local/
-data/
+/local/
+/data/
 
 # Generated reports
 reports/*
